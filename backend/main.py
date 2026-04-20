@@ -4,6 +4,10 @@ from fastapi import Body
 from bson import ObjectId
 from pymongo import MongoClient
 import certifi
+import os
+from dotenv import load_dotenv\
+
+load_dotenv()
 
 app = FastAPI()
 
@@ -16,7 +20,7 @@ app.add_middleware(
 
 # ── MongoDB connection ──────────────────────────────────────────────
 # Replace the string below with your actual MongoDB Atlas connection string
-MONGO_URI = "mongodb+srv://kjanicki_db_user:zyCpYNlu8p3bYsk3@cluster0.zpm6k4o.mongodb.net/?appName=Cluster0"
+MONGO_URI = os.getenv("MONGO_URI")
 
 client = MongoClient(MONGO_URI, tlsCAFile=certifi.where())
 db = client["local_art_market"]  # database name
