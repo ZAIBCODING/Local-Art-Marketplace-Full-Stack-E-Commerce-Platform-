@@ -54,8 +54,7 @@ export default function Profile() {
       }
     }
     document.addEventListener("mousedown", handleClickOutside);
-    return () =>
-      document.removeEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   function handleChange(e) {
@@ -141,38 +140,44 @@ export default function Profile() {
           <h1 style={styles.title}>Your Profile</h1>
 
           <form onSubmit={handleSave} style={styles.form}>
-            {["name", "email", "street", "unit", "city", "province", "country"].map(
-              (field) => (
-                <div key={field}>
-                  <label style={styles.label}>
-                    {field === "name"
-                      ? "Full Name"
-                      : field === "email"
+            {[
+              "name",
+              "email",
+              "street",
+              "unit",
+              "city",
+              "province",
+              "country",
+            ].map((field) => (
+              <div key={field} style={styles.fieldGroup}>
+                <label style={styles.label}>
+                  {field === "name"
+                    ? "Full Name"
+                    : field === "email"
                       ? "Email"
                       : field === "street"
-                      ? "Street Address"
-                      : field === "unit"
-                      ? "Unit / Apartment"
-                      : field === "city"
-                      ? "City"
-                      : field === "province"
-                      ? "Province / State"
-                      : "Country"}
-                  </label>
-                  <input
-                    name={field}
-                    value={form[field]}
-                    onChange={handleChange}
-                    style={
-                      field === "email"
-                        ? { ...styles.input, background: "#f5f5f5" }
-                        : styles.input
-                    }
-                    disabled={field === "email"}
-                  />
-                </div>
-              )
-            )}
+                        ? "Street Address"
+                        : field === "unit"
+                          ? "Unit / Apartment"
+                          : field === "city"
+                            ? "City"
+                            : field === "province"
+                              ? "Province / State"
+                              : "Country"}
+                </label>
+                <input
+                  name={field}
+                  value={form[field]}
+                  onChange={handleChange}
+                  style={
+                    field === "email"
+                      ? { ...styles.input, background: "#f5f5f5" }
+                      : styles.input
+                  }
+                  disabled={field === "email"}
+                />
+              </div>
+            ))}
 
             <button type="submit" style={styles.button}>
               Save Profile
@@ -197,16 +202,16 @@ const styles = {
     fontWeight: 700,
   },
   searchContainer: {
-  flex: 1,
-  maxWidth: "400px",
+    flex: 1,
+    maxWidth: "400px",
   },
   headerTop: {
-  display: "flex",
-  justifyContent: "space-between",
-  alignItems: "center",
-  maxWidth: "1100px",
-  margin: "0 auto",
-  gap: "1.5rem",
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    maxWidth: "1100px",
+    margin: "0 auto",
+    gap: "1.5rem",
   },
   headerActions: {
     display: "flex",
@@ -324,5 +329,17 @@ const styles = {
     fontSize: "0.9rem",
     color: "var(--accent)",
     textDecoration: "none",
+  },
+  fieldGroup: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "0.4rem",
+    marginBottom: "1rem",
+  },
+
+  form: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "0.5rem",
   },
 };

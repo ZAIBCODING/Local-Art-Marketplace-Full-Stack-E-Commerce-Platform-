@@ -1,4 +1,3 @@
-
 import Head from "next/head";
 import Link from "next/link";
 import Image from "next/image";
@@ -57,6 +56,47 @@ export default function CartPage() {
     e.preventDefault();
     setCheckoutError("");
 
+    const cardNumber = checkoutForm.cardNumber.replace(/\s/g, "");
+    const cvv = checkoutForm.cvv.trim();
+    const expiry = checkoutForm.expiry.trim();
+
+    // Card number: exactly 16 digits
+    if (!/^\d{16}$/.test(cardNumber)) {
+      setCheckoutError("Card number must be exactly 16 digits.");
+      return;
+    }
+
+    // CVV: exactly 3 digits
+    if (!/^\d{3}$/.test(cvv)) {
+      setCheckoutError("CVV must be exactly 3 digits.");
+      return;
+    }
+
+    // Expiry: MM/YY
+    if (!/^\d{2}\/\d{2}$/.test(expiry)) {
+      setCheckoutError("Expiry date must be in MM/YY format.");
+      return;
+    }
+
+    const [monthStr, yearStr] = expiry.split("/");
+    const month = Number(monthStr);
+    const year = Number(yearStr);
+
+    if (month < 1 || month > 12) {
+      setCheckoutError("Expiry month must be between 01 and 12.");
+      return;
+    }
+
+    // Expired card check
+    const now = new Date();
+    const currentYear = now.getFullYear() % 100;
+    const currentMonth = now.getMonth() + 1;
+
+    if (year < currentYear || (year === currentYear && month < currentMonth)) {
+      setCheckoutError("Card is expired.");
+      return;
+    }
+
     const order = {
       email: user,
       items: cart,
@@ -97,7 +137,8 @@ export default function CartPage() {
         <div style={styles.headerTop}>
           <Link href="/" style={styles.logoLink}>
             <h1 style={styles.logo}>
-              🎨 <span style={{ color: "var(--accent)" }}>Local Art Market</span>
+              🎨{" "}
+              <span style={{ color: "var(--accent)" }}>Local Art Market</span>
             </h1>
           </Link>
 
@@ -119,10 +160,18 @@ export default function CartPage() {
 
               {menuOpen && (
                 <div style={styles.dropdown}>
-                  <Link href="/profile" style={styles.dropdownItem}>Profile</Link>
-                  <Link href="/my-listings" style={styles.dropdownItem}>My Listings</Link>
-                  <Link href="/purchases" style={styles.dropdownItem}>My Purchases</Link>
-                  <div style={styles.dropdownItem} onClick={handleLogout}>Logout</div>
+                  <Link href="/profile" style={styles.dropdownItem}>
+                    Profile
+                  </Link>
+                  <Link href="/my-listings" style={styles.dropdownItem}>
+                    My Listings
+                  </Link>
+                  <Link href="/purchases" style={styles.dropdownItem}>
+                    My Purchases
+                  </Link>
+                  <div style={styles.dropdownItem} onClick={handleLogout}>
+                    Logout
+                  </div>
                 </div>
               )}
             </div>
@@ -136,7 +185,9 @@ export default function CartPage() {
         {cart.length === 0 ? (
           <div style={styles.empty}>
             <p style={styles.emptyText}>Your cart is empty.</p>
-            <Link href="/" style={styles.browseLink}>Browse the gallery →</Link>
+            <Link href="/" style={styles.browseLink}>
+              Browse the gallery →
+            </Link>
           </div>
         ) : (
           <div style={styles.layout}>
@@ -144,28 +195,45 @@ export default function CartPage() {
               {cart.map((item) => (
                 <div key={item.id} style={styles.item}>
                   <div style={styles.itemImageWrap}>
-                    <Image src={resolveImageSrc(item.image)} alt={item.title} width={100} height={80} style={styles.itemImage} />
+                    <Image
+                      src={resolveImageSrc(item.image)}
+                      alt={item.title}
+                      width={100}
+                      height={80}
+                      style={styles.itemImage}
+                    />
                   </div>
 
                   <div style={styles.itemDetails}>
-                    <Link href={`/artwork/${item.id}`} style={styles.itemTitle}>{item.title}</Link>
+                    <Link href={`/artwork/${item.id}`} style={styles.itemTitle}>
+                      {item.title}
+                    </Link>
                     <p style={styles.itemArtist}>by {item.artist}</p>
                     <p style={styles.itemMedium}>{item.medium}</p>
                   </div>
 
                   <div style={styles.itemRight}>
-                    <p style={styles.itemPrice}>${(item.price * item.quantity).toFixed(2)}</p>
+                    <p style={styles.itemPrice}>
+                      ${(item.price * item.quantity).toFixed(2)}
+                    </p>
                     {item.quantity > 1 && (
-                      <p style={styles.itemQty}>×{item.quantity} @ ${item.price.toFixed(2)}</p>
+                      <p style={styles.itemQty}>
+                        ×{item.quantity} @ ${item.price.toFixed(2)}
+                      </p>
                     )}
-                    <button onClick={() => removeFromCart(item.id)} style={styles.removeButton}>
+                    <button
+                      onClick={() => removeFromCart(item.id)}
+                      style={styles.removeButton}
+                    >
                       Remove
                     </button>
                   </div>
                 </div>
               ))}
 
-              <button onClick={() => clearCart()} style={styles.clearButton}>Clear Cart</button>
+              <button onClick={() => clearCart()} style={styles.clearButton}>
+                Clear Cart
+              </button>
             </div>
 
             <div style={styles.summary}>
@@ -183,10 +251,15 @@ export default function CartPage() {
                 <span>${totalPrice.toFixed(2)}</span>
               </div>
 
-              <button style={styles.checkoutButton} onClick={() => setShowCheckout(true)}>
+              <button
+                style={styles.checkoutButton}
+                onClick={() => setShowCheckout(true)}
+              >
                 Proceed to Checkout
               </button>
-              <Link href="/" style={styles.continueShopping}>← Continue Shopping</Link>
+              <Link href="/" style={styles.continueShopping}>
+                ← Continue Shopping
+              </Link>
             </div>
           </div>
         )}
@@ -201,14 +274,18 @@ export default function CartPage() {
                 placeholder="Full Name"
                 required
                 value={checkoutForm.name}
-                onChange={(e) => setCheckoutForm({ ...checkoutForm, name: e.target.value })}
+                onChange={(e) =>
+                  setCheckoutForm({ ...checkoutForm, name: e.target.value })
+                }
                 style={styles.input}
               />
               <input
                 placeholder="Shipping Address"
                 required
                 value={checkoutForm.address}
-                onChange={(e) => setCheckoutForm({ ...checkoutForm, address: e.target.value })}
+                onChange={(e) =>
+                  setCheckoutForm({ ...checkoutForm, address: e.target.value })
+                }
                 style={styles.input}
               />
               <input
@@ -216,7 +293,12 @@ export default function CartPage() {
                 required
                 maxLength={16}
                 value={checkoutForm.cardNumber}
-                onChange={(e) => setCheckoutForm({ ...checkoutForm, cardNumber: e.target.value })}
+                onChange={(e) =>
+                  setCheckoutForm({
+                    ...checkoutForm,
+                    cardNumber: e.target.value.replace(/\D/g, ""),
+                  })
+                }
                 style={styles.input}
               />
               <div style={{ display: "flex", gap: "1rem" }}>
@@ -225,7 +307,9 @@ export default function CartPage() {
                   required
                   maxLength={5}
                   value={checkoutForm.expiry}
-                  onChange={(e) => setCheckoutForm({ ...checkoutForm, expiry: e.target.value })}
+                  onChange={(e) =>
+                    setCheckoutForm({ ...checkoutForm, expiry: e.target.value })
+                  }
                   style={styles.input}
                 />
                 <input
@@ -233,7 +317,12 @@ export default function CartPage() {
                   required
                   maxLength={3}
                   value={checkoutForm.cvv}
-                  onChange={(e) => setCheckoutForm({ ...checkoutForm, cvv: e.target.value })}
+                  onChange={(e) =>
+                    setCheckoutForm({
+                      ...checkoutForm,
+                      cvv: e.target.value.replace(/\D/g, ""),
+                    })
+                  }
                   style={styles.input}
                 />
               </div>
@@ -242,8 +331,17 @@ export default function CartPage() {
                   {checkoutError}
                 </p>
               )}
-              <button type="submit" style={styles.submitButton}>Place Order</button>
-              <button type="button" onClick={() => { setShowCheckout(false); setCheckoutError(""); }} style={styles.cancelButton}>
+              <button type="submit" style={styles.submitButton}>
+                Place Order
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setShowCheckout(false);
+                  setCheckoutError("");
+                }}
+                style={styles.cancelButton}
+              >
                 Cancel
               </button>
             </form>
@@ -258,7 +356,10 @@ export default function CartPage() {
             <p style={styles.orderText}>
               Thank you for your purchase! Your order has been confirmed.
             </p>
-            <button onClick={() => setOrderPlaced(false)} style={styles.submitButton}>
+            <button
+              onClick={() => setOrderPlaced(false)}
+              style={styles.submitButton}
+            >
               Continue Shopping
             </button>
           </div>
