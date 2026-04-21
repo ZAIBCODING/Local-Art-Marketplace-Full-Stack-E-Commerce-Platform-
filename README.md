@@ -17,7 +17,8 @@ An e-commerce platform where individuals and artists can buy and sell handmade a
 ## Project Structure
 
 ```
-project-1-kaper-shahzaib-jinnan/
+
+Local-Art-Marketplace-Full-Stack-E-Commerce-Platform-/
 ├── backend/
 │   ├── main.py            # FastAPI app & API routes
 │   ├── test_main.py       # unittest suite
